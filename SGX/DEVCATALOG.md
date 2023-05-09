@@ -1,28 +1,25 @@
 # **BigDL PPML on SGX**
 
+## Introduction
+
 Learn to use BigDL PPML (BigDL Privacy Preserving Machine Learning) to run end-to-end big data analytics applications with distributed clusters on Intel Software Guard Extensions (SGX).
 
 For more workflow examples and reference implementations, please check [Developer Catalog](TODO).
 
-## Overview
+
+## Solution Technical Overview
 
 [PPML](https://bigdl.readthedocs.io/en/latest/doc/PPML/Overview/ppml.html) (Privacy Preserving Machine Learning) in [BigDL 2.0](https://github.com/intel-analytics/BigDL) provides a Trusted Cluster Environment for secure Big Data & AI applications, even in an untrusted cloud environment. By combining SGX with several other security technologies (e.g., attestation, key management service, private set intersection, federated learning, and homomorphic encryption), BigDL PPML ensures end-to-end security enabled for the entire distributed workflows (Apache Spark, Apache Flink, XGBoost, TensorFlow, PyTorch, etc.).
 
 For more details, please visit the [BigDL 2.0](https://github.com/intel-analytics/BigDL) GitHub repository.
 
-## Hardware Requirements
-Supported processors: Intel® 3th Gen Xeon® Scalable Performance processors or later
-Recommended regular memory size: 512G
-Recommended EPC(Enclave Page Cache) memory size: 512G
-Recommended Cluster Node Number: 3 or more
-
-## How it Works
+## Solution Technical Details
 
 PPML ensures security for all dimensions of the data lifecycle: data at rest, data in transit, and data in use. Data being transferred on a network is `in transit`, data in storage is `at rest`, and data being processed is `in use`.
 
 ![Data Lifecycle](https://user-images.githubusercontent.com/61072813/177720405-60297d62-d186-4633-8b5f-ff4876cc96d6.png)
 
-PPML protects compute and memory by SGX Enclaves, storage (e.g., data and model) by encryption, network communication by remote attestation and Transport Layer Security (TLS), and optional Federated Learning support.
+PPML allows organizations to explore powerful AI techniques while working to minimize the security risks associated with handling large amounts of sensitive data. PPML protects data at rest, in transit and in use: compute and memory protected by SGX Enclaves, storage (e.g., data and model) protected by encryption, network communication protected by remote attestation and Transport Layer Security (TLS), and optional Federated Learning support.
 
 ![BigDL PPML](https://user-images.githubusercontent.com/61072813/177922914-f670111c-e174-40d2-b95a-aafe92485024.png)
 
@@ -33,10 +30,27 @@ With BigDL PPML, you can run trusted Big Data & AI applications. Different bigdl
 - **Trusted DL Serving**: with trusted DL Serving, users can run Torchserve, Tritonserver, and TF-Serving in a secure and trusted environment.
 - **Trusted Machin Learning**: with end-to-end trusted training and inference, users can run LightGBM (data parallel, feature parallel, voting parallel, etc.) and Spark MLlib (supervised, unsupervised, recommendation, etc.) ML applications in a distributed and secure way.
 
+## Validated Hardware Details
+
+| Supported Hardware           |
+| ---------------------------- |
+| Intel® 3th Gen Xeon® Scalable Performance processors or later |
+
+Recommended regular memory size: 512G
+
+Recommended EPC(Enclave Page Cache) memory size: 512G
+
+Recommended Cluster Node Number: 3 or more
+
+## How it Works
+![image](https://user-images.githubusercontent.com/61072813/178393982-929548b9-1c4e-4809-a628-10fafad69628.png)
+
+As the above picture shows, there are several steps in BigDL PPML, including the deployment(set up K8S, SGX, etc.), the preparation(the image and the data), the APP building(the code), the job submission and reading of results. In addition, AS(Attestation Servive) is optional and will be introduced below.
+
 ## Get Started
 
 ### BigDL PPML End-to-End Workflow
-![image](https://user-images.githubusercontent.com/61072813/178393982-929548b9-1c4e-4809-a628-10fafad69628.png)
+
 In this section, we take the image `bigdl-ppml-trusted-bigdata-gramine` and `MultiPartySparkQueryExample` as an example to go through the entire BigDL PPML end-to-end workflow. MultiPartySparkQueryExample is to decrypt people data encrypted with different encryption methods and filter out people whose age is between 20 and 40.
 
 ### Prepare your environment
