@@ -2,13 +2,13 @@
 
 ## Introduction
 
-Learn to use BigDL PPML (BigDL Privacy Preserving Machine Learning) to run end-to-end Big Data & AI applications with distributed clusters on Intel Trust Domain Extensions (TDX).
+Learn to use BigDL PPML (BigDL Privacy Preserving Machine Learning) to run end-to-end Big Data & AI applications with distributed clusters on Intel® Trust Domain Extensions (TDX).
 
-For more workflow examples and reference implementations, please check [Developer Catalog](TODO).
+For more workflow examples and reference implementations, please check [Developer Catalog](https://developer.intel.com/aireferenceimplementations).
 
 ## Solution Technique Overview
 
-[PPML](https://bigdl.readthedocs.io/en/latest/doc/PPML/Overview/ppml.html) (Privacy Preserving Machine Learning) in [BigDL 2.0](https://github.com/intel-analytics/BigDL) provides a Trusted Cluster Environment for secure Big Data & AI applications, even in an untrusted cloud environment. By combining Intel Trust Domain Extensions (TDX) with several other security technologies (e.g., attestation, key management service, private set intersection, federated learning, homomorphic encryption, etc.), BigDL PPML ensures end-to-end security enabled for the entire distributed workflows, such as Apache Spark, Apache Flink, XGBoost, TensorFlow, PyTorch, etc.
+[PPML](https://bigdl.readthedocs.io/en/latest/doc/PPML/Overview/ppml.html) (Privacy Preserving Machine Learning) in [BigDL 2.0](https://github.com/intel-analytics/BigDL) provides a Trusted Cluster Environment for secure Big Data & AI applications, even in an untrusted cloud environment. By combining Intel® Trust Domain Extensions (TDX) with several other security technologies (e.g., attestation, key management service, private set intersection, federated learning, homomorphic encryption, etc.), BigDL PPML ensures end-to-end security enabled for the entire distributed workflows, such as Apache Spark, Apache Flink, XGBoost, TensorFlow, PyTorch, etc.
 
 For more details, please visit [BigDL 2.0](https://github.com/intel-analytics/BigDL) GitHub Repository.
 

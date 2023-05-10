@@ -2,9 +2,9 @@
 
 ## Introduction
 
-Learn to use BigDL PPML (BigDL Privacy Preserving Machine Learning) to run end-to-end big data analytics applications with distributed clusters on Intel Software Guard Extensions (SGX).
+Learn to use BigDL PPML (BigDL Privacy Preserving Machine Learning) to run end-to-end big data analytics applications with distributed clusters on Intel® Software Guard Extensions (SGX).
 
-For more workflow examples and reference implementations, please check [Developer Catalog](TODO).
+For more workflow examples and reference implementations, please check [Developer Catalog](https://developer.intel.com/aireferenceimplementations).
 
 
 ## Solution Technical Overview
