@@ -1,35 +1,51 @@
 # **BigDL PPML on TDX**
 
-## Overview
+## Introduction
+
+Learn to use BigDL PPML (BigDL Privacy Preserving Machine Learning) to run end-to-end Big Data & AI applications with distributed clusters on Intel Trust Domain Extensions (TDX).
+
+For more workflow examples and reference implementations, please check [Developer Catalog](TODO).
+
+## Solution Technique Overview
 
 [PPML](https://bigdl.readthedocs.io/en/latest/doc/PPML/Overview/ppml.html) (Privacy Preserving Machine Learning) in [BigDL 2.0](https://github.com/intel-analytics/BigDL) provides a Trusted Cluster Environment for secure Big Data & AI applications, even in an untrusted cloud environment. By combining Intel Trust Domain Extensions (TDX) with several other security technologies (e.g., attestation, key management service, private set intersection, federated learning, homomorphic encryption, etc.), BigDL PPML ensures end-to-end security enabled for the entire distributed workflows, such as Apache Spark, Apache Flink, XGBoost, TensorFlow, PyTorch, etc.
 
+For more details, please visit [BigDL 2.0](https://github.com/intel-analytics/BigDL) GitHub Repository.
 
-## How it works
+## Solution Technical Details
 
 PPML ensures security for all dimensions of the data lifecycle: data at rest, data in transit, and data in use. Data being transferred on a network is `in transit`, data in storage is `at rest`, and data being processed is `in use`.
 
-
 ![Data Lifecycle](https://user-images.githubusercontent.com/61072813/177720405-60297d62-d186-4633-8b5f-ff4876cc96d6.png)
-
 
 PPML protects computation and memory by Trusted Domains, storage (e.g., data and model) by encryption, network communication by remote attestation and Transport Layer Security (TLS), and optional Federated Learning support.
 
 ![BigDL PPML](https://user-images.githubusercontent.com/61072813/177922914-f670111c-e174-40d2-b95a-aafe92485024.png)
 
-<!-- TODO: Modify -->
 With BigDL PPML, you can run trusted Big Data & AI applications
+
 - **Trusted Spark SQL & Dataframe**: with trusted Big Data analytics and ML/DL support, users can run standard Spark data analysis (such as Spark SQL, Dataframe, MLlib, etc.) in a secure and trusted fashion.
+
 - **Trusted ML (Machine Learning)**: with trusted Big Data analytics and ML/DL support, users can run distributed machine learning (such as MLlib, XGBoost etc.) in a secure and trusted fashion.
-- **Trusted DL (Deep Learning)**: with Trusted Deep Learning Toolkit, users can run secured end-to-end PyTorch training using either single machine or cloud-native clusters in a trusted execution environment. 
+
+- **Trusted DL (Deep Learning)**: with Trusted Deep Learning Toolkit, users can run secured end-to-end PyTorch training using either single machine or cloud-native clusters in a trusted execution environment.
+
+
+## Validated Hardware Details
+The hardware below is recommended for use with this reference implementation.
+
+Intel® 4th Gen Xeon® Scalable Performance processors or later
+
+## How it works
+
+PPML provides two different Trusted Execution Environments, which are TDX-VM (Virtual Machine) and TDX-CoCo (Confidential Containers).  In this section, we will introduce the overall architecture of these two different architectures.
 
 ## Get Started
 
 ### Prepare TDX environment
 
-Prepare your environment first, including TDVM orchestration, K8s cluster setup, key management service (KMS) ,attestation service (AS) setup and BigDL PPML client container preparation. **Please follow the detailed steps in** [Prepare Environment](https://github.com/intel-analytics/BigDL/blob/main/ppml/docs/prepare_environment.md). 
+Prepare your environment first, including TDX-VM/TDX-CoCo orchestration, K8s cluster setup, key management service (KMS) ,attestation service (AS) setup and BigDL PPML client container preparation. **Please follow the detailed steps in** [Prepare Environment for TDX-VM](https://github.com/intel-analytics/BigDL/blob/main/ppml/tdx/tdx-vm/README.md#prepare-tdx-vm-environment) and [Prepare Environment for TDX-CoCo](https://github.com/intel-analytics/BigDL/blob/main/ppml/tdx/tdx-coco/README.md#prepare-tdx-coco-environment). 
 
-<!-- TODO: It may be appropriate to add TDX-specific environment setup information on the above website -->
 
 
 ### BigDL PPML End-to-End Distributed PyTorch Training
@@ -162,7 +178,6 @@ To build a secure PPML image for a production environment, BigDL prepared a publ
     Note: you can also customize the image according to your own needs, e.g. install third-parity python libraries or jars.
 
 
-<!-- TODO: encrypt?-->
 #### Step 2. Prepare Model Archive file and config file
 
 Same as using normal TorchServe service, users need to prepare the `Model Archive` file using `torch-model-archiver` in advance.  Check [here](https://github.com/pytorch/serve/tree/master/model-archiver#torch-model-archiver-for-torchserve) for detail instructions on how to package the model files into a `mar` file.
@@ -226,10 +241,6 @@ Transfer/sec:      6.67KB
 
 
 
-## Recommended Hardware
-The hardware below is recommended for use with this reference implementation.
-
-Intel® 4th Gen Xeon® Scalable Performance processors or later
 
 ## Learn More
 [BigDL PPML](https://github.com/intel-analytics/BigDL/tree/main/ppml)

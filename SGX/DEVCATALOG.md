@@ -68,12 +68,7 @@ To build a secure PPML image for a production environment, BigDL prepared a publ
 
 1. Prepare BigDL Base Image
 
-    You can use our public bigdata base image `intelanalytics/bigdl-ppml-trusted-bigdata-gramine-base:2.3.0-SNAPSHOT`, which is recommended. Or you can build your base image, which is expected to be the same as ours.
-
-    Pull the base image
-    ```bash
-    docker pull intelanalytics/bigdl-ppml-gramine-base:2.3.0-SNAPSHOT
-    ```
+    Build base image using `base.Dockerfile`.
 
 2. Build a Custom Image
 
