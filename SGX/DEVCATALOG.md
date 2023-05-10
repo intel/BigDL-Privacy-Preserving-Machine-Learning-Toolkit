@@ -19,7 +19,7 @@ PPML ensures security for all dimensions of the data lifecycle: data at rest, da
 
 ![Data Lifecycle](https://user-images.githubusercontent.com/61072813/177720405-60297d62-d186-4633-8b5f-ff4876cc96d6.png)
 
-PPML allows organizations to explore powerful AI techniques while working to minimize the security risks associated with handling large amounts of sensitive data. PPML protects data at rest, in transit and in use: compute and memory protected by SGX Enclaves, storage (e.g., data and model) protected by encryption, network communication protected by remote attestation and Transport Layer Security (TLS), and optional Federated Learning support.
+PPML allows organizations to explore powerful AI techniques while working to minimize the security risks associated with handling large amounts of sensitive data. PPML protects data at rest, in transit, and in use: compute and memory protected by SGX Enclaves, storage (e.g., data and model) protected by encryption, network communication protected by remote attestation and Transport Layer Security (TLS), and optional Federated Learning support.
 
 ![BigDL PPML](https://user-images.githubusercontent.com/61072813/177922914-f670111c-e174-40d2-b95a-aafe92485024.png)
 
@@ -45,7 +45,7 @@ Recommended Cluster Node Number: 3 or more
 ## How it Works
 ![image](https://user-images.githubusercontent.com/61072813/178393982-929548b9-1c4e-4809-a628-10fafad69628.png)
 
-As the above picture shows, there are several steps in BigDL PPML, including the deployment(set up K8S, SGX, etc.), the preparation(the image and the data), the APP building(the code), the job submission and reading of results. In addition, AS(Attestation Servive) is optional and will be introduced below.
+As the above picture shows, there are several steps in BigDL PPML, including the deployment(set up K8S, SGX, etc.), the preparation(the image and the data), the APP building(the code), the job submission, and reading of results. In addition, AS(Attestation Servive) is optional and will be introduced below.
 
 ## Get Started
 
@@ -93,7 +93,7 @@ To build a secure PPML image for a production environment, BigDL prepared a publ
     mr_signer        : 6f0627955......
     ````
 
-    Note: you can also customize the image according to your own needs (e.g. third-parity python libraries or jars).
+    Note: you can also customize the image according to your own needs (e.g. third-parity Python libraries or jars).
     
     Then, start a client container:
 
@@ -223,7 +223,7 @@ In the container, execute `verify-attestation-service.sh` to verify the attestat
 
 **4. Register your MREnclave to EHSM**
 
-Register the MREnclave with metadata of your MREnclave (appid, apikey, mr_enclave, mr_signer) obtained in the above steps to EHSM through running a python script:
+Register the MREnclave with metadata of your MREnclave (appid, apikey, mr_enclave, mr_signer) obtained in the above steps to EHSM through running a Python script:
 
 ```bash
 # At /ppml/trusted-big-data-ml inside the container now

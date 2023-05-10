@@ -26,9 +26,9 @@ With BigDL PPML, you can run trusted Big Data & AI applications
 
 - **Trusted Spark SQL & Dataframe**: with trusted Big Data analytics and ML/DL support, users can run standard Spark data analysis (such as Spark SQL, Dataframe, MLlib, etc.) in a secure and trusted fashion.
 
-- **Trusted ML (Machine Learning)**: with trusted Big Data analytics and ML/DL support, users can run distributed machine learning (such as MLlib, XGBoost etc.) in a secure and trusted fashion.
+- **Trusted ML (Machine Learning)**: with trusted Big Data analytics and ML/DL support, users can run distributed machine learning (such as MLlib, XGBoost, etc.) in a secure and trusted fashion.
 
-- **Trusted DL (Deep Learning)**: with Trusted Deep Learning Toolkit, users can run secured end-to-end PyTorch training using either single machine or cloud-native clusters in a trusted execution environment.
+- **Trusted DL (Deep Learning)**: with Trusted Deep Learning Toolkit, users can run secured end-to-end PyTorch training using either a single machine or cloud-native clusters in a trusted execution environment.
 
 
 ## Validated Hardware Details
@@ -44,7 +44,7 @@ PPML provides two different Trusted Execution Environments, which are TDX-VM (Vi
 
 ### Prepare TDX environment
 
-Prepare your environment first, including TDX-VM/TDX-CoCo orchestration, K8s cluster setup, key management service (KMS) ,attestation service (AS) setup and BigDL PPML client container preparation. **Please follow the detailed steps in** [Prepare Environment for TDX-VM](https://github.com/intel-analytics/BigDL/blob/main/ppml/tdx/tdx-vm/README.md#prepare-tdx-vm-environment) and [Prepare Environment for TDX-CoCo](https://github.com/intel-analytics/BigDL/blob/main/ppml/tdx/tdx-coco/README.md#prepare-tdx-coco-environment). 
+Prepare your environment first, including TDX-VM/TDX-CoCo orchestration, K8s cluster setup, key management service (KMS), attestation service (AS) setup, and BigDL PPML client container preparation. **Please follow the detailed steps in** [Prepare Environment for TDX-VM](https://github.com/intel-analytics/BigDL/blob/main/ppml/tdx/tdx-vm/README.md#prepare-tdx-vm-environment) and [Prepare Environment for TDX-CoCo](https://github.com/intel-analytics/BigDL/blob/main/ppml/tdx/tdx-coco/README.md#prepare-tdx-coco-environment). 
 
 
 
@@ -67,7 +67,7 @@ To build a secure PPML image for a production environment, BigDL prepared a publ
     docker pull intelanalytics/bigdl-ppml-trusted-deep-learning-gramine-base:2.2.0
     ```
 
-2. Build Custom Image
+2. Build a Custom Image
 
     When the base image is ready, you need to generate your enclave key which will be used when building a custom image. Keep the enclave key safe for future usage.
 
@@ -102,21 +102,21 @@ The `patch_encryption()` function used in the example script is provided by `big
 
 #### Step 3. Build Distributed PyTorch training script
 
-To build your own Distributed PyTorch training script, you can refer to the official [tutorial](https://pytorch.org/tutorials/intermediate/ddp_tutorial.html).  The code we use for fine-tuning PERT model can be found [here](https://github.com/intel-analytics/BigDL/blob/main/ppml/trusted-deep-learning/base/pert.py).
+To build your own Distributed PyTorch training script, you can refer to the official [tutorial](https://pytorch.org/tutorials/intermediate/ddp_tutorial.html).  The code we use for fine-tuning the PERT model can be found [here](https://github.com/intel-analytics/BigDL/blob/main/ppml/trusted-deep-learning/base/pert.py).
 
 
 #### Step 4. Submit Job
 
 When the Big Data & AI application and its input data is prepared, you are ready to submit BigDL PPML jobs. We have prepared a [python script](https://github.com/intel-analytics/BigDL/blob/main/python/nano/src/bigdl/nano/k8s/bigdl_submit.py) which can be used to submit training jobs.
 
-The job submit script is also included in the `intelanalytics/bigdl-ppml-trusted-deep-learning-gramine-base:2.2.0` image so that it should already been included in your custom image. The default location for the script is `/usr/local/lib/python3.7/dist-packages/bigdl/nano/k8s/bigdl_submit.py`.
+The job submit script is also included in the `intelanalytics/bigdl-ppml-trusted-deep-learning-gramine-base:2.2.0` image so it should have already been included in your custom image. The default location for the script is `/usr/local/lib/python3.7/dist-packages/bigdl/nano/k8s/bigdl_submit.py`.
 
 
 #### Step 6. Monitor job and check results
 
-Once the job has been scheduled and booted successfully, you can monitor the training progress by check the logs of the kubernetes' pod.
+Once the job has been scheduled and booted successfully, you can monitor the training progress by checking the logs of the pod.
 
-If you want to save the trained model in an encrypted form, you can choose to pass a keyword argument `encryption_key` into patched `torch.save` method. In our situation, the `encryption_key` is retrieved from EHSM in a trusted execution environment. Check the following code for an example:
+If you want to save the trained model in an encrypted form, you can choose to pass a keyword argument `encryption_key` into the patched `torch.save` method. In our situation, the `encryption_key` is retrieved from EHSM in a trusted execution environment. Check the following code for an example:
 
 ```python
 
@@ -137,11 +137,11 @@ torch.save(model.state_dict(), "pert.bin", encryption_key=key)
 
 
 ### BigDL PPML End-to-End Deep-learning Serving Service with TorchServe
-In this section, we will go through the entire workflow to deploy a trusted Deep-Learning Serving (hereinafter called DL-Serving) service that provide functionality to classifying the chinese sentiment of various reviews from websites using [TorchServe](https://pytorch.org/serve/).
+In this section, we will go through the entire workflow to deploy a trusted Deep-Learning Serving (hereinafter called DL-Serving) service that provides functionality to classify the Chinese sentiment of various reviews from websites using [TorchServe](https://pytorch.org/serve/).
 
 ![torchserve](./torchserve.png)
 
-#### Step 1. Prepare your PPML image for production environment
+#### Step 1. Prepare your PPML image for the production environment
 
 
 To build a secure PPML image for a production environment, BigDL prepared a public base image that does not contain any secrets. You can customize your image on top of this base image.
@@ -155,7 +155,7 @@ To build a secure PPML image for a production environment, BigDL prepared a publ
     docker pull intelanalytics/bigdl-ppml-trusted-dl-serving-gramine-base:2.2.0
     ```
 
-2. Build Custom Image
+2. Build a Custom Image
 
     When the base image is ready, you need to generate your enclave key which will be used when building a custom image. Keep the enclave key safe for future usage.
 
@@ -178,9 +178,9 @@ To build a secure PPML image for a production environment, BigDL prepared a publ
     Note: you can also customize the image according to your own needs, e.g. install third-parity python libraries or jars.
 
 
-#### Step 2. Prepare Model Archive file and config file
+#### Step 2. Prepare the Model Archive file and config file
 
-Same as using normal TorchServe service, users need to prepare the `Model Archive` file using `torch-model-archiver` in advance.  Check [here](https://github.com/pytorch/serve/tree/master/model-archiver#torch-model-archiver-for-torchserve) for detail instructions on how to package the model files into a `mar` file.
+Same as using normal TorchServe service, users need to prepare the `Model Archive` file using `torch-model-archiver` in advance.  Check [here](https://github.com/pytorch/serve/tree/master/model-archiver#torch-model-archiver-for-torchserve) for detailed instructions on how to package the model files into a `mar` file.
 
 TorchServe uses a `config.properties` file to store configurations. Examples can be found [here](https://pytorch.org/serve/configuration.html#config-model). An important configuration is `minWorkers`, the start script will try to boot up to `minWorkers` backends.
 
@@ -221,12 +221,13 @@ Assuming the above configuration file is stored at `/ppml/tsconfigfp32cl`, then 
  ```bash
  bash /ppml/torchserve/start-torchserve.sh -c /ppml/tsconfigfp32cl -f "0" -b "1,2"
  ```
-As introduced in this performance tuning [guild](https://tutorials.pytorch.kr/intermediate/torchserve_with_ipex#efficient-cpu-usage-with-core-pinning-for-multi-worker-inference), we also pinned the cpu while booting up our frontend and backends. The `"-f 0"` indicates that the frontend will be pinned to core 0, while the `"-b 1,2"` indicates that the first backend will be pinned to core 1, and the second backend will be pinned to core 2.
+
+We pinned the CPU while booting up our frontend and backends. The `"-f 0"` indicates that the frontend will be pinned to core 0, while the `"-b 1,2"` indicates that the first backend will be pinned to core 1, and the second backend will be pinned to core 2.
 
 
 #### Step 4. Access the service using https requests
 
-After the service has booted up, we can access the service using https requests.  Here we show a simple benchmark result using the [wrk](https://github.com/wg/wrk) tool.  The result with 5 threads and 10 connections are:
+After the service has been booted up, we can access the service using https requests.  Here we show a simple benchmark result using the [wrk](https://github.com/wg/wrk) tool.  The result with 5 threads and 10 connections are:
 
 ```text
 Running 5m test @ http://127.0.0.1:8085/predictions/NANO_FP32CL
@@ -243,8 +244,11 @@ Transfer/sec:      6.67KB
 
 
 ## Learn More
+
 [BigDL PPML](https://github.com/intel-analytics/BigDL/tree/main/ppml)
+
 [Tutorials](https://bigdl.readthedocs.io/en/latest/doc/PPML/Overview/examples.html)
+
 [TDX whitepaper](https://www.intel.com/content/dam/develop/external/us/en/documents/tdx-whitepaper-v4.pdf)
 
 
