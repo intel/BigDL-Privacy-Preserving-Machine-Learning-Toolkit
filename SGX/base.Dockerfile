@@ -23,31 +23,31 @@ ENV MALLOC_ARENA_MAX                    4
 
 RUN mkdir -p /ppml/
 
-ADD ./bash.manifest.template /ppml/bash.manifest.template
-ADD ./Makefile /ppml/Makefile
-ADD ./init.sh /ppml/init.sh
-ADD ./clean.sh /ppml/clean.sh
+COPY ./bash.manifest.template /ppml/bash.manifest.template
+COPY ./Makefile /ppml/Makefile
+COPY ./init.sh /ppml/init.sh
+COPY ./clean.sh /ppml/clean.sh
 
 # These files ared used for attestation service and register MREnclave
-ADD ./register-mrenclave.py /ppml/register-mrenclave.py
-ADD ./verify-attestation-service.sh /ppml/verify-attestation-service.sh
+COPY ./register-mrenclave.py /ppml/register-mrenclave.py
+COPY ./verify-attestation-service.sh /ppml/verify-attestation-service.sh
 
-ADD ./_dill.py.patch /_dill.py.patch
-ADD ./python-pslinux.patch /python-pslinux.patch
+COPY ./_dill.py.patch /_dill.py.patch
+COPY ./python-pslinux.patch /python-pslinux.patch
 
 # Python3.9
-RUN env DEBIAN_FRONTEND=noninteractive apt-get update && \
-    apt install software-properties-common -y && \
+RUN env DEBIAN_FRONTEND=noninteractive apt-get update --no-install-recommends && \
+    apt-get install software-properties-common -y && \
     add-apt-repository ppa:deadsnakes/ppa -y && \
     apt-get install -y python3.9 && \
     rm /usr/bin/python3 && \
     ln -s /usr/bin/python3.9 /usr/bin/python3 && \
     ln -s /usr/bin/python3 /usr/bin/python && \
     apt-get install -y python3-pip python3.9-dev python3-wheel && \
-    pip3 install --upgrade pip && \
+    pip3 install --no-cache --upgrade pip && \
     pip3 install --no-cache requests argparse cryptography==3.3.2 urllib3 && \
-    pip3 install --upgrade requests && \
-    pip3 install setuptools==58.4.0 && \
+    pip3 install --no-cache --upgrade requests && \
+    pip3 install --no-cache setuptools==58.4.0 && \
 # Gramine
     apt-get update --fix-missing && \
     env DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get install -y apt-utils wget unzip protobuf-compiler libgmp3-dev libmpfr-dev libmpfr-doc libmpc-dev && \
@@ -57,13 +57,13 @@ RUN env DEBIAN_FRONTEND=noninteractive apt-get update && \
     env DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential autoconf bison gawk git ninja-build python3-click python3-jinja2 wget pkg-config cmake libcurl4-openssl-dev libprotobuf-c-dev protobuf-c-compiler python3-cryptography python3-pip python3-protobuf nasm && \
     git clone https://github.com/analytics-zoo/gramine.git /gramine && \
     git clone https://github.com/intel/SGXDataCenterAttestationPrimitives.git /opt/intel/SGXDataCenterAttestationPrimitives && \
-    cd /gramine && \
+    cd /gramine || exit && \
     git checkout ${GRAMINE_BRANCH} && \
 # Also create the patched gomp
     meson setup build/ --buildtype=release  -Dsgx=enabled   -Dsgx_driver=dcap1.10 -Dlibgomp=enabled && \
     ninja -C build/ && \
     ninja -C build/ install && \
-    cd /ppml/ && \
+    cd /ppml/ || exit && \
     mkdir -p /ppml/lib/ && \
     cp /usr/local/lib/x86_64-linux-gnu/gramine/runtime/glibc/libgomp.so.1 /ppml/lib/ && \
 # meson will copy the original file instead of the symlink, which enable us to delete the gramine directory entirely
@@ -82,20 +82,20 @@ RUN env DEBIAN_FRONTEND=noninteractive apt-get update && \
     chmod +x /ppml/verify-attestation-service.sh && \
 # Install sgxsdk and dcap, which is used for remote attestation
     mkdir -p /opt/intel/ && \
-    cd /opt/intel && \
-    wget https://download.01.org/intel-sgx/sgx-dcap/1.16/linux/distro/ubuntu20.04-server/sgx_linux_x64_sdk_2.19.100.3.bin && \
+    cd /opt/intel || exit && \
+    wget -q https://download.01.org/intel-sgx/sgx-dcap/1.16/linux/distro/ubuntu20.04-server/sgx_linux_x64_sdk_2.19.100.3.bin && \
     chmod a+x ./sgx_linux_x64_sdk_2.19.100.3.bin && \
     printf "no\n/opt/intel\n"|./sgx_linux_x64_sdk_2.19.100.3.bin && \
     . /opt/intel/sgxsdk/environment && \
-    cd /opt/intel && \
-    wget https://download.01.org/intel-sgx/sgx-dcap/1.16/linux/distro/ubuntu20.04-server/sgx_debian_local_repo.tgz && \
+    cd /opt/intel || exit && \
+    wget -q https://download.01.org/intel-sgx/sgx-dcap/1.16/linux/distro/ubuntu20.04-server/sgx_debian_local_repo.tgz && \
     tar xzf sgx_debian_local_repo.tgz && \
     echo 'deb [trusted=yes arch=amd64] file:///opt/intel/sgx_debian_local_repo focal main' | tee /etc/apt/sources.list.d/intel-sgx.list && \
     wget -qO - https://download.01.org/intel-sgx/sgx_repo/ubuntu/intel-sgx-deb.key | apt-key add - && \
     apt-get update && \
     apt-get install -y libsgx-enclave-common-dev  libsgx-ae-qe3 libsgx-ae-qve libsgx-urts libsgx-dcap-ql libsgx-dcap-default-qpl libsgx-dcap-quote-verify-dev libsgx-dcap-ql-dev libsgx-dcap-default-qpl-dev libsgx-quote-ex-dev libsgx-uae-service libsgx-ra-network libsgx-ra-uefi libtdx-attest libtdx-attest-dev && \
 # java
-    cd /opt && \
+    cd /opt || exit && \
     wget $JDK_URL && \
     gunzip jdk-$JDK_VERSION-linux-x64.tar.gz && \
     tar -xf jdk-$JDK_VERSION-linux-x64.tar -C /opt && \
@@ -114,20 +114,20 @@ RUN env DEBIAN_FRONTEND=noninteractive apt-get update && \
 # folder to contain the keys (primary key and data key)
     mkdir -p /ppml/encrypted_keys && \
 # Install bigdl-ppml lib
-    cd /ppml/ && \
+    cd /ppml/ || exit && \
     git clone https://github.com/intel-analytics/BigDL.git && \
-    cd BigDL && \
+    cd BigDL || exit && \
     mkdir -p /ppml/bigdl-ppml/ && \
     cp -r /ppml/BigDL/python/ppml/src/ /ppml/bigdl-ppml && \
     rm -rf /ppml/BigDL && \
-    cd /ppml
+    cd /ppml || exit
 
 
-ADD ./download_jars.sh /ppml
-ADD ./attestation.sh /ppml
-ADD ./encrypted-fsd.sh /ppml
+COPY ./download_jars.sh /ppml
+COPY ./attestation.sh /ppml
+COPY ./encrypted-fsd.sh /ppml
 
-RUN cd /ppml && \
+RUN cd /ppml || exit && \
     bash ./download_jars.sh
 
 ENV PYTHONPATH   /usr/lib/python3.9:/usr/lib/python3.9/lib-dynload:/usr/local/lib/python3.9/dist-packages:/usr/lib/python3/dist-packages:/ppml/bigdl-ppml/src
