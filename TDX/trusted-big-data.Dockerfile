@@ -1,6 +1,6 @@
 FROM intelanalytics/bigdl-k8s
 
-ADD ./download-bigdl-ppml.sh /opt/download-bigdl-ppml.sh
+COPY ./download-bigdl-ppml.sh /opt/download-bigdl-ppml.sh
 RUN chmod a+x /opt/download-bigdl-ppml.sh
 
 RUN apt-get update --fix-missing && \
