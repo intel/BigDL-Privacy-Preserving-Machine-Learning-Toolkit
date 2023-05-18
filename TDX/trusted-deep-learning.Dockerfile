@@ -4,8 +4,8 @@ RUN mkdir -p /ppml/
 
 # Add example
 RUN mkdir /ppml/examples
-ADD ./pert.py                    /ppml/examples/pert.py
-ADD ./pert_nano.py               /ppml/examples/pert_nano.py     
+COPY ./pert.py                    /ppml/examples/pert.py
+COPY ./pert_nano.py               /ppml/examples/pert_nano.py     
 
 # Install PYTHON3.8
 RUN env DEBIAN_FRONTEND=noninteractive apt-get update && \
