@@ -1,19 +1,19 @@
-FROM intelanalytics/bigdl-k8s
+FROM intelanalytics/bigdl-k8s:latest
 
-ADD ./download-bigdl-ppml.sh /opt/download-bigdl-ppml.sh
+COPY ./download-bigdl-ppml.sh /opt/download-bigdl-ppml.sh
 RUN chmod a+x /opt/download-bigdl-ppml.sh
 
-RUN apt-get update --fix-missing && \
+RUN apt-get update --fix-missing --no-install-recommends && \
     DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get install -y tzdata && \
-    apt install software-properties-common -y && \
+    apt-get install --no-cache-dir software-properties-common -y && \
     add-apt-repository ppa:deadsnakes/ppa -y && \
 # Install python3.8
-    apt-get install -y python3.8 python3.8-dev python3.8-distutils build-essential python3-wheel python3-pip && \
+    apt-get install -y --no-cache-dir python3.8 python3.8-dev python3.8-distutils build-essential python3-wheel python3-pip && \
     rm /usr/bin/python3 && \
     ln -s /usr/bin/python3.8 /usr/bin/python3 && \
-    pip3 install --upgrade pip && \
-    pip3 install setuptools && \
-    pip3 install numpy && \
+    pip3 install --no-cache-dir --upgrade pip && \
+    pip3 install --no-cache-dir setuptools && \
+    pip3 install --no-cache-dir numpy && \
     ln -s /usr/bin/python3 /usr/bin/python && \
 # Download BigDL PPML jar with dependency jar
     /opt/download-bigdl-ppml.sh
