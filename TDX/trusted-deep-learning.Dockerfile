@@ -17,12 +17,12 @@ RUN env DEBIAN_FRONTEND=noninteractive apt-get update && \
     ln -s /usr/bin/python3.8 /usr/bin/python3 && \
     pip3 install --no-cache-dir --upgrade pip && \
     pip3 install --no-cache-dir setuptools && \
-    pip3 install --no-cache datasets==2.6.1 transformers intel_extension_for_pytorch && \
+    pip3 install --no-cache-dir datasets==2.6.1 transformers intel_extension_for_pytorch && \
     ln -s /usr/bin/python3 /usr/bin/python
 
 ENV PYTHONPATH  /usr/lib/python3.8:/usr/lib/python3.8/lib-dynload:/usr/local/lib/python3.8/dist-packages:/usr/lib/python3/dist-packages
 
-RUN pip3 install --pre --no-cache --upgrade bigdl-nano[pytorch]
+RUN pip3 install --pre --no-cache-dir --upgrade bigdl-nano[pytorch]
 WORKDIR /ppml
 
 ENTRYPOINT [ "/bin/bash" ]
