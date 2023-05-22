@@ -1,9 +1,9 @@
-FROM intelanalytics/bigdl-k8s:latest
+FROM intelanalytics/bigdl-k8s:2.4.0-SNAPSHOT
 
 COPY ./download-bigdl-ppml.sh /opt/download-bigdl-ppml.sh
 RUN chmod a+x /opt/download-bigdl-ppml.sh
 
-RUN apt-get update --fix-missing --no-install-recommends && \
+RUN apt-get update --fix-missing --no-install-recommends && apt-get clean && rm -rf /var/lib/apt/lists/* \
     DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get install -y tzdata && \
     apt-get install --no-install-recommends software-properties-common -y && \
     add-apt-repository ppa:deadsnakes/ppa -y && \
