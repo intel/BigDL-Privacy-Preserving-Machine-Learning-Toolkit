@@ -40,13 +40,13 @@ RUN wget -q $JDK_URL && \
     ln -s /opt/jdk$JDK_VERSION /opt/jdk
 
 # spark
-RUN cd /opt && \
-    wget -q https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop3.2.tgz && \
+WORKDIR /opt
+RUN get -q https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop3.2.tgz && \
     tar -zxvf spark-${SPARK_VERSION}-bin-hadoop3.2.tgz && \
     mv spark-${SPARK_VERSION}-bin-hadoop3.2 spark-${SPARK_VERSION} && \
     rm spark-${SPARK_VERSION}-bin-hadoop3.2.tgz && \
     cp spark-${SPARK_VERSION}/conf/log4j.properties.template spark-${SPARK_VERSION}/conf/log4j.properties && \
-    echo $'\nlog4j.logger.io.netty=ERROR' >> spark-${SPARK_VERSION}/conf/log4j.properties \
+    echo "$(printf '\nlog4j.logger.io.netty=ERROR')" >> spark-${SPARK_VERSION}/conf/log4j.properties \
     rm spark-${SPARK_VERSION}/python/lib/pyspark.zip && \
     rm spark-${SPARK_VERSION}/jars/spark-core_2.12-$SPARK_VERSION.jar && \
     rm spark-${SPARK_VERSION}/jars/spark-launcher_2.12-$SPARK_VERSION.jar && \
@@ -57,8 +57,7 @@ RUN cd /opt && \
     rm spark-${SPARK_VERSION}/jars/hive-exec-2.3.7-core.jar
 COPY ./log4j2.xml /opt/spark-${SPARK_VERSION}/conf/log4j2.xml
 # spark modification
-RUN cd /opt && \
-    wget -q $SPARK_JAR_REPO_URL/spark-core_2.12-$SPARK_VERSION.jar && \
+RUN wget -q $SPARK_JAR_REPO_URL/spark-core_2.12-$SPARK_VERSION.jar && \
     wget -q $SPARK_JAR_REPO_URL/spark-kubernetes_2.12-$SPARK_VERSION.jar && \
     wget -q $SPARK_JAR_REPO_URL/spark-network-common_2.12-$SPARK_VERSION.jar && \
     wget -q $SPARK_JAR_REPO_URL/spark-examples_2.12-$SPARK_VERSION.jar && \
@@ -86,24 +85,23 @@ RUN cd /opt && \
     wget -qP /opt/spark-${SPARK_VERSION}/jars/ https://repo1.maven.org/maven2/com/microsoft/azure/azure-storage/7.0.0/azure-storage-7.0.0.jar && \
     wget -qP /opt/spark-${SPARK_VERSION}/jars/ https://repo1.maven.org/maven2/com/microsoft/azure/azure-data-lake-store-sdk/2.2.9/azure-data-lake-store-sdk-2.2.9.jar
 # hadoop
-RUN cd /opt && \
-    apt-get update --fix-missing --no-install-recommends && \
-    apt-get install -y build-essential && \
+RUN apt-get update --fix-missing --no-install-recommends && \
+    apt-get install --no-install-recommends -y build-essential && \
     wget -q https://github.com/protocolbuffers/protobuf/releases/download/v2.5.0/protobuf-2.5.0.tar.bz2 && \
-    tar jxvf protobuf-2.5.0.tar.bz2 && \
-    cd protobuf-2.5.0 && \
-    ./configure && \
+    tar jxvf protobuf-2.5.0.tar.bz2
+WORKDIR /opt/protobuf-2.5.0
+RUN ./configure && \
     make && \
     make check && \
     export LD_LIBRARY_PATH=/usr/local/lib && \
     make install && \
-    protoc --version && \
-    cd /opt && \
-    git clone https://github.com/analytics-zoo/hadoop.git && \
-    cd hadoop && \
-    git checkout branch-3.2.0-ppml && \
-    cd hadoop-common-project/hadoop-common && \
-    export MAVEN_OPTS="-Xmx2g -XX:ReservedCodeCacheSize=512m \
+    protoc --version
+WORKDIR /opt/
+RUN git clone https://github.com/analytics-zoo/hadoop.git
+WORKDIR /opt/hadoop
+RUN git checkout branch-3.2.0-ppml
+WORKDIR /opt/hadoop/hadoop-common-project/hadoop-common
+RUN export MAVEN_OPTS="-Xmx2g -XX:ReservedCodeCacheSize=512m \
         -Dhttp.proxyHost=$HTTP_PROXY_HOST \
         -Dhttp.proxyPort=$HTTP_PROXY_PORT \
         -Dhttps.proxyHost=$HTTPS_PROXY_HOST \
@@ -111,12 +109,12 @@ RUN cd /opt && \
     mvn -T 16 -DskipTests=true clean package && \
     mv /opt/hadoop/hadoop-common-project/hadoop-common/target/hadoop-common-3.2.0.jar /opt/spark-${SPARK_VERSION}/jars/hadoop-common-3.2.0.jar
 # hive
-RUN cd /opt && \
-    git clone https://github.com/analytics-zoo/hive.git && \
-    cd hive && \
-    git checkout branch-2.3.7-ppml && \
-    cd ql && \
-    export MAVEN_OPTS="-Xmx2g -XX:ReservedCodeCacheSize=512m \
+WORKDIR /opt
+RUN git clone https://github.com/analytics-zoo/hive.git
+WORKDIR /opt/hive
+RUN git checkout branch-2.3.7-ppml
+WORKDIR /opt/hive/ql
+RUN export MAVEN_OPTS="-Xmx2g -XX:ReservedCodeCacheSize=512m \
         -Dhttp.proxyHost=$HTTP_PROXY_HOST \
         -Dhttp.proxyPort=$HTTP_PROXY_PORT \
         -Dhttps.proxyHost=$HTTPS_PROXY_HOST \
@@ -128,9 +126,9 @@ RUN cd /opt && \
 RUN wget -nv -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" && \
   chmod +x /usr/local/bin/gosu && \
   gosu nobody true && \
-  mkdir -p $FLINK_HOME && \
-  cd $FLINK_HOME && \
-  wget -nv -O flink.tgz "https://www.apache.org/dyn/closer.cgi?action=download&filename=flink/flink-${FLINK_VERSION}/flink-${FLINK_VERSION}-bin-scala_${SCALA_VERSION}.tgz" && \
+  mkdir -p $FLINK_HOME
+WORKDIR $FLINK_HOME
+RUN wget -nv -O flink.tgz "https://www.apache.org/dyn/closer.cgi?action=download&filename=flink/flink-${FLINK_VERSION}/flink-${FLINK_VERSION}-bin-scala_${SCALA_VERSION}.tgz" && \
   tar -xf flink.tgz --strip-components=1 && \
   rm flink.tgz && \
 # Replace default REST/RPC endpoint bind address to use the container's network interface
@@ -149,7 +147,7 @@ ENV SPARK_VERSION               ${SPARK_VERSION}
 ENV BIGDL_VERSION               ${BIGDL_VERSION}
 ENV BIGDL_HOME                  /bigdl-${BIGDL_VERSION}
 RUN apt-get update --fix-missing --no-install-recommends && \
-    apt-get install -y apt-utils curl wget unzip git
+    apt-get install --no-install-recommends -y apt-utils curl wget unzip git
 RUN wget -q https://raw.githubusercontent.com/intel-analytics/analytics-zoo/bigdl-2.0/docker/hyperzoo/download-bigdl.sh && \
     chmod a+x ./download-bigdl.sh
 RUN ./download-bigdl.sh && \
@@ -198,42 +196,47 @@ COPY ./spark-executor-template-for-tdxvm.yaml /ppml/spark-executor-template-for-
 COPY ./spark-driver-template-for-tdxvm.yaml /ppml/spark-driver-template-for-tdxvm.yaml
 
 COPY https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /sbin/tini
-RUN rm $SPARK_HOME/jars/okhttp-*.jar && \
-    wget -qP $SPARK_HOME/jars https://repo1.maven.org/maven2/com/squareup/okhttp3/okhttp/3.8.0/okhttp-3.8.0.jar && \
-    wget -qP $SPARK_HOME/jars https://github.com/xerial/sqlite-jdbc/releases/download/3.36.0.1/sqlite-jdbc-3.36.0.1.jar && \
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+RUN rm ${SPARK_HOME}/jars/okhttp-*.jar && \
+    wget -qP ${SPARK_HOME}/jars https://repo1.maven.org/maven2/com/squareup/okhttp3/okhttp/3.8.0/okhttp-3.8.0.jar && \
+    wget -qP ${SPARK_HOME}/jars https://github.com/xerial/sqlite-jdbc/releases/download/3.36.0.1/sqlite-jdbc-3.36.0.1.jar && \
     chmod +x /opt/entrypoint.sh && \
     chmod +x /sbin/tini && \
     chmod +x /ppml/bigdl-ppml-submit.sh && \
     cp /sbin/tini /usr/bin/tini && \
-    gramine-argv-serializer bash -c 'export TF_MKL_ALLOC_MAX_BYTES=10737418240 && export _SPARK_AUTH_SECRET=$_SPARK_AUTH_SECRET && $sgx_command' > /ppml/secured_argvs && \
-    wget -qP $SPARK_HOME/jars https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.28/mysql-connector-java-8.0.28.jar && \
-    chmod a+x /ppml/scripts/* && \
+    gramine-argv-serializer bash -c "export TF_MKL_ALLOC_MAX_BYTES=10737418240 && export _SPARK_AUTH_SECRET=$_SPARK_AUTH_SECRET && $sgx_command" > /ppml/secured_argvs && \
+    wget -qP ${SPARK_HOME}/jars https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.28/mysql-connector-java-8.0.28.jar && \
+    chmod a+x /ppml/scripts/*
 #flink
-    env DEBIAN_FRONTEND=noninteractive apt-get install -y libsnappy1v5 gettext-base libjemalloc-dev && \
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y libsnappy1v5 gettext-base libjemalloc-dev && \
     rm -rf /var/lib/apt/lists/* && \
     groupadd --system --gid=9999 flink && \
     useradd --system --home-dir ${FLINK_HOME} --uid=9999 --gid=flink flink && \
     chmod +x /usr/local/bin/gosu && \
     chmod +x /opt/flink-entrypoint.sh && \
     chmod -R 777 ${FLINK_HOME} && \
-    chown -R flink:flink ${FLINK_HOME} && \
+    chown -R flink:flink ${FLINK_HOME}
 # Python packages
-    pip3 install numpy pandas pyarrow&& \
-    cp ${BIGDL_HOME}/jars/bigdl-ppml-spark_${SPARK_VERSION}-${BIGDL_VERSION}.jar ${SPARK_HOME}/jars/ && \
-    cp ${BIGDL_HOME}/jars/bigdl-dllib-spark_${SPARK_VERSION}-${BIGDL_VERSION}.jar ${SPARK_HOME}/jars/ && \
+RUN pip3 install --no-cache-dir numpy pandas pyarrow && \
+    cp "${BIGDL_HOME}/jars/bigdl-ppml-spark_${SPARK_VERSION}-${BIGDL_VERSION}.jar" "${SPARK_HOME}/jars/" && \
+    cp "${BIGDL_HOME}/jars/bigdl-dllib-spark_${SPARK_VERSION}-${BIGDL_VERSION}.jar" "${SPARK_HOME}/jars/"
 # zeppelin
-    chmod +x /ppml/zeppelin/deploy.sh && \
-    chmod +x /ppml/zeppelin/delete.sh && \
+RUN chmod +x /ppml/zeppelin/deploy.sh && \
+    chmod +x /ppml/zeppelin/delete.sh
 # Azure support
-    apt purge -y libsgx-dcap-default-qpl && \
+RUN apt-get purge -y libsgx-dcap-default-qpl && \
     echo "deb [arch=amd64] https://packages.microsoft.com/ubuntu/20.04/prod focal main" | tee /etc/apt/sources.list.d/msprod.list && \
     wget -qO - https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
-    apt update --no-install-recommends && \
-    apt install -y az-dcap-client && \
-    curl -sL https://aka.ms/InstallAzureCLIDeb | bash && \
-    apt-get install bsdmainutils && \
-    curl -LO https://dl.k8s.io/release/v1.25.0/bin/linux/amd64/kubectl  && \
-    install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+    apt-get update --no-install-recommends && \
+    apt-get install -y --no-install-recommends az-dcap-client && \
+    wget -qP https://aka.ms/InstallAzureCLIDeb | bash && \
+    apt-get install -y --no-install-recommends bsdmainutils && \
+    wget -qP https://dl.k8s.io/release/v1.25.0/bin/linux/amd64/kubectl  && \
+    install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl  && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 COPY azure /ppml/azure
 RUN chmod a+x /ppml/azure/create-aks.sh && \
     chmod a+x /ppml/azure/generate-keys-az.sh && \
